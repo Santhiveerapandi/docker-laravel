@@ -9,6 +9,10 @@ Setting up Laravel in the local environment with Docker using the LEMP stack tha
 - [x] You can use different versions of the same programming language.
 - [x] Deployment is easy
 
+## env key
+base64:VxekhA7+1/+rXH+ApUAYw7jhJt+cEO270my6//V5o+k=
+docker compose exec app php artisan env:decrypt --key=base64:VxekhA7+1/+rXH+ApUAYw7jhJt+cEO270my6//V5o+k=
+
 ## How to Install and Run the Project
 
 1. ``` git clone https://github.com/Santhiveerapandi/docker-laravel.git ```
@@ -17,6 +21,10 @@ Setting up Laravel in the local environment with Docker using the LEMP stack tha
 4. ```docker compose build```
 5. ```docker compose up -d```
 6. You can see the project on ```127.0.0.1:8080```
+
+## UI Auth scaffolding installation
+docker compose exec app composer require laravel/ui
+docker compose exec app php artisan ui bootstrap
 
 ## How to use MySQL as a database
 
@@ -43,6 +51,10 @@ Setting up Laravel in the local environment with Docker using the LEMP stack tha
 ## Queue
 1. ```docker compose exec app php artisan make:job DownloadVideoJob```
 2. ```docker compose exec app php artisan queue:work```
+
+## in ubuntu checking port occupied process
+sudo lsof -i :6379
+sudo systemctl stop redis
 
 ## Medium
 

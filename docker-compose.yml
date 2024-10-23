@@ -1,4 +1,4 @@
-# version: '3.8'
+version: '3.8'
 
 services:
 
@@ -13,19 +13,19 @@ services:
       - ./nginx/conf.d/:/etc/nginx/conf.d/
     depends_on:
       - app
-      # - db
+      - db
 
   #Database Service
-  # db:
-  #   image : mysql
-  #   container_name : mysql
-  #   volumes:
-  #     - ./mysql/data:/var/lib/mysql
-  #   ports:
-  #     - "3306:3306"
-  #   environment:
-  #     MYSQL_DATABASE: blog
-  #     MYSQL_ROOT_PASSWORD: password
+  db:
+    image : mysql
+    container_name : mysql
+    volumes:
+      - ./mysql/data:/var/lib/mysql
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_DATABASE: blog
+      MYSQL_ROOT_PASSWORD: password
   # db:
   #   image: postgres
   #   container_name: postgres
@@ -49,21 +49,26 @@ services:
     ports:
       - "9000:9000"
     working_dir: /var/www
-  
+    depends_on:
+      - node-app
+    command: >
+      sh -c "chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache && php-fpm"
+
+  # Redis Service
   redis:
     container_name: redis
     image: redis
     ports:
-      - "6379:6379"
+      - "6380:6379"
 
   #phpMyAdmin Service
-  # phpmyadmin:
-  #   image: phpmyadmin/phpmyadmin
-  #   container_name: phpmyadmin
-  #   ports:
-  #     - "3400:80"
-  #   depends_on:
-  #     - db
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    ports:
+      - "3400:80"
+    depends_on:
+      - db
   # pgadmin:
   #   image: dpage/pgadmin4
   #   container_name: pgAdmin
@@ -74,3 +79,24 @@ services:
   #   environment:
   #     PGADMIN_DEFAULT_EMAIL: hanieasemi76@gmail.com
   #     PGADMIN_DEFAULT_PASSWORD: password 
+
+  # Node.js Service for npm commands
+  # node-app:
+  #   image: node:18
+  #   container_name: node-app
+  #   working_dir: /var/www
+  #   volumes:
+  #     - ./src:/var/www  # Sync the Laravel project folder
+  #   command: >
+  #     sh -c "npm install && npm run dev"  # Run npm install and then npm run dev
+    
+  node-app:
+    image: node:18
+    container_name: node-app
+    working_dir: /var/www
+    volumes:
+      - ./src:/var/www
+    command: >
+      sh -c "npm install && npm run dev"
+    depends_on:
+      - db
